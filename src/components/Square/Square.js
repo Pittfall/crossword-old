@@ -1,6 +1,6 @@
 import React from 'react';
 
-import classes from './Square.css';
+import classes from './Square.module.css';
 
 const square = (props) => {
   const squareType = props.type;

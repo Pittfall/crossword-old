@@ -4,7 +4,7 @@ import Square from '../../components/Square/Square';
 
 import { MockPuzzle } from '../../MockPuzzle/MockPuzzle';
 
-import classes from './Grid.css';
+import classes from './Grid.module.css';
 
 class Grid extends Component {
   state = {
