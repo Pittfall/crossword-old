@@ -5,7 +5,6 @@ import classes from './Square.module.css';
 const square = (props) => {
   const squareType = props.type;
   let squareCSS = [classes.white];
-  let squareNumber = null;
   let clicked = props.clicked;
 
   if (isNaN(squareType)) {
@@ -16,7 +15,6 @@ const square = (props) => {
   }
   else {
     squareCSS = [...squareCSS, classes.numbered]
-    squareNumber = +squareType;
   }
 
   if (props.focused) {
@@ -24,7 +22,7 @@ const square = (props) => {
   }
 
   return (
-    <div className={squareCSS.join(' ')} onClick={clicked}>{squareNumber}</div>
+    <div className={squareCSS.join(' ')} onClick={clicked}></div>
   );
 }
 

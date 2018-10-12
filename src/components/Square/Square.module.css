@@ -5,6 +5,10 @@
   padding: 0;
   margin: 0;
   float: left;
+  position: relative;
+  text-align: center;
+  font-weight: bold;
+  line-height: 1.9em;
 }
 
 .black {
@@ -21,7 +25,15 @@
   background: yellow;
 }
 
-.numbered::before {
-  font-size: 6px;
+.numbered {
+  counter-increment: value;
+}
+
+.numbered:nth-of-type(n)::before {
   position: absolute;
+  font-weight: normal;
+  top: -35%;
+  left: 1%;
+  content: counter(value);
+  font-size: 10px;
 }
