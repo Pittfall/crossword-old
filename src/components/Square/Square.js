@@ -22,7 +22,7 @@ const square = (props) => {
   }
 
   return (
-    <div className={squareCSS.join(' ')} onClick={clicked}></div>
+    <div className={squareCSS.join(' ')} onClick={clicked} onKeyPress={props.keyDown} tabIndex={0}>{props.value}</div>
   );
 }
 
