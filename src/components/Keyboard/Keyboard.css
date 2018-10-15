@@ -1,0 +1,18 @@
+.simple-keyboard.hg-theme-default.myTheme {
+  border-radius: 10px;
+  padding: 5px;
+  width: calc(100%);
+}
+
+.simple-keyboard .hg-row {
+  margin: auto;
+  text-align: center;
+  position: relative;
+}
+
+.simple-keyboard.hg-layout-default .hg-button.KeyMAN {
+  height: 45px;
+  width: 32px;
+  padding: 0;
+  flex-grow: unset;
+}

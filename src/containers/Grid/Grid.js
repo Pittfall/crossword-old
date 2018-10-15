@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
 
 import Square from '../../components/Square/Square';
+import Keyboard from '../../components/Keyboard/Keyboard';
 
+import { CLUE_DIRECTION } from '../../constants/constants';
 import { MockPuzzle } from '../../MockPuzzle/MockPuzzle';
 
 import classes from './Grid.module.css';
 
 class Grid extends Component {
   state = {
-    gridValues: null
+    gridValues: null,
+    clueDirection: CLUE_DIRECTION.Across
   }
 
   componentDidMount () {
@@ -40,20 +43,18 @@ class Grid extends Component {
     this.setState({gridValues: grid})
   }
 
-  squareKeyDownHandler = (event, row, col) => {
-    if (event.key.match(/[a-z]/i)) {
+  keyPressedHandler = (button) => {
       const grid = [...this.state.gridValues];
 
       for (let i = 0; i < grid.length; i++) {
         for (let j = 0; j < grid[i].length; j++) {
-          if (i === row && j === col) {
-            grid[i][j] = {...grid[i][j], value: event.key.toUpperCase()};
+          if (grid[i][j].focus) {
+            grid[i][j] = {...grid[i][j], value: button};
           }
         }
       }
 
       this.setState({gridValues: grid})
-    }
   }
 
   render () {
@@ -69,8 +70,7 @@ class Grid extends Component {
               focused={this.state.gridValues[i][j].focus}
               value = {this.state.gridValues[i][j].value}
               type={MockPuzzle[i][j]} 
-              clicked={() => this.squareClickedHandler(i, j)} 
-              keyDown = {(event) => this.squareKeyDownHandler(event, i, j)}/>);
+              clicked={() => this.squareClickedHandler(i, j)} />);
         }
       }
     }
@@ -78,6 +78,7 @@ class Grid extends Component {
     return (
       <div className={classes.Grid}>
         {squares}
+        <Keyboard keyPress={(button) => this.keyPressedHandler(button)} />
       </div>
     );
   }

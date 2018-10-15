@@ -1,20 +1,21 @@
 .white {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border: 1px solid black;
   padding: 0;
-  margin: 0;
   float: left;
   position: relative;
   text-align: center;
   font-weight: bold;
-  line-height: 1.9em;
+  line-height: 2.2em;
   outline: none;
+  font-size: 20px;
+  color: #323232;
 }
 
 .black {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   background: black;
   border: 1px solid black;
   padding: 0;
@@ -37,7 +38,7 @@
 .numbered:nth-of-type(n)::before {
   position: absolute;
   font-weight: normal;
-  top: -35%;
+  top: -50%;
   left: 1%;
   content: counter(value);
   font-size: 10px;
