@@ -7,7 +7,7 @@
   position: relative;
   text-align: center;
   font-weight: bold;
-  line-height: 2.2em;
+  line-height: 1.8em;
   outline: none;
   font-size: 20px;
   color: #323232;
@@ -33,7 +33,7 @@
 .Numbered:nth-of-type(n)::before {
   position: absolute;
   font-weight: normal;
-  top: -50%;
+  top: -45%;
   left: 1%;
   content: counter(value);
   font-size: 10px;

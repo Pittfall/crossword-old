@@ -50,11 +50,11 @@ class Grid extends Component {
       for (let j = 0; j < grid[i].length; j++) {
         if (grid[i][j].focus) {
           grid[i][j] = {...grid[i][j], value: button};
+          this.setState({gridValues: grid});
+          return;
         }
       }
     }
-
-    this.setState({gridValues: grid})
   }
 
   render () {
