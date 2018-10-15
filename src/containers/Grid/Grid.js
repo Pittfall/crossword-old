@@ -44,17 +44,17 @@ class Grid extends Component {
   }
 
   keyPressedHandler = (button) => {
-      const grid = [...this.state.gridValues];
+    const grid = [...this.state.gridValues];
 
-      for (let i = 0; i < grid.length; i++) {
-        for (let j = 0; j < grid[i].length; j++) {
-          if (grid[i][j].focus) {
-            grid[i][j] = {...grid[i][j], value: button};
-          }
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = 0; j < grid[i].length; j++) {
+        if (grid[i][j].focus) {
+          grid[i][j] = {...grid[i][j], value: button};
         }
       }
+    }
 
-      this.setState({gridValues: grid})
+    this.setState({gridValues: grid})
   }
 
   render () {
