@@ -4,21 +4,21 @@ import classes from './Square.module.css';
 
 const square = (props) => {
   const squareType = props.type;
-  let squareCSS = [classes.white];
+  let squareCSS = [classes.Square];
   let clicked = props.clicked;
 
   if (isNaN(squareType)) {
     if (squareType === 'B') {
-      squareCSS = [...squareCSS, classes.black];
+      squareCSS = [...squareCSS, classes.Black];
       clicked = null;
     }
   }
   else {
-    squareCSS = [...squareCSS, classes.numbered]
+    squareCSS = [...squareCSS, classes.Numbered]
   }
 
   if (props.focused) {
-    squareCSS = [...squareCSS, classes.focused];
+    squareCSS = [...squareCSS, classes.Focused];
   }
 
   return (

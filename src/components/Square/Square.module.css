@@ -1,4 +1,4 @@
-.white {
+.Square {
   width: 32px;
   height: 32px;
   border: 1px solid black;
@@ -13,29 +13,24 @@
   color: #323232;
 }
 
-.black {
-  width: 32px;
-  height: 32px;
+.Black {
   background: black;
-  border: 1px solid black;
-  padding: 0;
-  margin: 0;
   float: left;
 }
 
-.focused {
+.Focused {
   background: yellow;
 }
 
-.helpSolve {
+.HelpSolve {
   background-image: linear-gradient(225deg, red, white 7px, transparent 7px, transparent);
 }
 
-.numbered {
+.Numbered {
   counter-increment: value;
 }
 
-.numbered:nth-of-type(n)::before {
+.Numbered:nth-of-type(n)::before {
   position: absolute;
   font-weight: normal;
   top: -50%;
