@@ -15,12 +15,12 @@ class Grid extends Component {
   }
 
   componentDidMount () {
-    const grid = new Array(15);
+    const grid = new Array(MockPuzzle.length);
 
     for (let i = 0; i < grid.length; i++) {
-      grid[i] = new Array(15);
+      grid[i] = new Array(MockPuzzle[i].length);
       for (let j = 0; j < grid[i].length; j++) {
-        grid[i][j] = {focus: false};
+        grid[i][j] = {focus: false, type: MockPuzzle[i][j], value: ''};
       }
     }
 
@@ -43,6 +43,36 @@ class Grid extends Component {
     this.setState({gridValues: grid})
   }
 
+  getNextSquarePoints = (grid, currentRow, currentColumn) => {
+    let gotValidSquare = false;
+
+    while(!gotValidSquare) {
+      if (this.state.clueDirection === CLUE_DIRECTION.Across) {
+        if (currentColumn + 1 > grid[currentRow].length - 1) {
+          currentColumn = 0;
+          currentRow = currentRow + 1 > grid.length - 1 ? 0 : currentRow + 1;
+        } else {
+          currentColumn += 1;
+        }
+      }
+  
+      if (this.state.clueDirection === CLUE_DIRECTION.Down) {
+        if (currentRow + 1 > grid.length - 1) {
+          currentRow = 0;
+          currentColumn = currentColumn + 1 > grid[currentRow].length - 1 ? 0 : currentColumn + 1;
+        } else {
+          currentRow += 1;
+        }
+      }
+
+      if (grid[currentRow][currentColumn].type !== 'B') {
+        gotValidSquare = true;
+      }
+    }
+    
+    return [currentRow, currentColumn];
+  }
+
   keyPressedHandler = (button) => {
     const grid = [...this.state.gridValues];
 
@@ -50,6 +80,9 @@ class Grid extends Component {
       for (let j = 0; j < grid[i].length; j++) {
         if (grid[i][j].focus) {
           grid[i][j] = {...grid[i][j], value: button};
+          const nextSquarePoints = this.getNextSquarePoints(grid, i, j);
+          grid[i][j].focus = false;
+          grid[nextSquarePoints[0]][nextSquarePoints[1]].focus = true;
           this.setState({gridValues: grid});
           return;
         }
@@ -69,7 +102,7 @@ class Grid extends Component {
             <Square key={key++} 
               focused={this.state.gridValues[i][j].focus}
               value = {this.state.gridValues[i][j].value}
-              type={MockPuzzle[i][j]} 
+              type={this.state.gridValues[i][j].type} 
               clicked={() => this.squareClickedHandler(i, j)} />);
         }
       }
