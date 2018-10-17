@@ -8,6 +8,7 @@
   margin: auto;
   text-align: center;
   position: relative;
+  justify-content: center;
 }
 
 .simple-keyboard.hg-layout-default .hg-button.KeyMAN {
