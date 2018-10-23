@@ -4,27 +4,39 @@ import Square from '../../components/Square/Square';
 import Keyboard from '../../components/Keyboard/Keyboard';
 
 import { CLUE_DIRECTION } from '../../constants/constants';
-import { MockPuzzle } from '../../MockPuzzle/MockPuzzle';
+import { mockPuzzle } from '../../CrosswordData/NYTData/NYTData';
 
 import classes from './Grid.module.css';
 
 class Grid extends Component {
   state = {
     gridValues: null,
-    clueDirection: CLUE_DIRECTION.Across
+    clueDirection: CLUE_DIRECTION.Across,
+    puzzleData: null
   }
 
   componentDidMount () {
-    const grid = new Array(MockPuzzle.length);
+    mockPuzzle()
+    .then (data => {
+      const grid = new Array(data.columns);
 
-    for (let i = 0; i < grid.length; i++) {
-      grid[i] = new Array(MockPuzzle[i].length);
-      for (let j = 0; j < grid[i].length; j++) {
-        grid[i][j] = {focus: false, type: MockPuzzle[i][j], value: ''};
+      let counter = 0;
+      for (let i = 0; i < grid.length; i++) {
+        grid[i] = new Array(data.rows);
+        for (let j = 0; j < grid[i].length; j++) {
+          grid[i][j] = {focus: false, type: data.gridNums[counter], value: ''};
+          counter++;
+        }
       }
-    }
 
-    this.setState({gridValues: grid})
+      this.setState({
+        gridValues: grid,
+        puzzleData: data
+      });
+    })
+    .catch (error => {
+
+    });
   }
 
   squareClickedHandler = (row, col) => {
@@ -96,8 +108,8 @@ class Grid extends Component {
 
     if (this.state.gridValues) {
       squares = [];
-      for (let i = 0; i < MockPuzzle.length; i++) {
-        for (let j = 0; j < MockPuzzle[i].length; j++) {
+      for (let i = 0; i < this.state.puzzleData.columns; i++) {
+        for (let j = 0; j < this.state.puzzleData.rows; j++) {
           squares.push(
             <Square key={key++} 
               focused={this.state.gridValues[i][j].focus}
