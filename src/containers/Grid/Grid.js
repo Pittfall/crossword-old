@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React, { Fragment, Component } from 'react';
 
 import Square from '../../components/Square/Square';
 import Keyboard from '../../components/Keyboard/Keyboard';
 
 import { CLUE_DIRECTION } from '../../constants/constants';
 import { mockPuzzle } from '../../CrosswordData/NYTData/NYTData';
+import Spinner from '../../UI/Spinner/Spinner';
 
 import classes from './Grid.module.css';
 
@@ -119,12 +120,20 @@ class Grid extends Component {
         }
       }
     }
-    
-    return (
-      <div className={classes.Grid}>
+
+    let content = <Spinner />;
+
+    if (squares) {
+      content = <div className={classes.Grid}>
         {squares}
         <Keyboard keyPress={(button) => this.keyPressedHandler(button)} />
       </div>
+    }
+    
+    return (
+      <Fragment>
+        {content}
+      </Fragment>
     );
   }
 }
