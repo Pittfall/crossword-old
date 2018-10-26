@@ -10,11 +10,13 @@ export const mockPuzzle = () => {
         down: {},
         grid: {},
         gridNums: {},
-        rows: 15,
-        columns: 15
+        rows: 0,
+        columns: 0
       };
 
       for (let i = 0; i < response.data.clues.across.length; ++i) {
+        retData.rows = response.data.size.rows;
+        retData.columns = response.data.size.cols;
         retData.across[i] = {
           number: GetNumberFromClue(response.data.clues.across[i]),
           clue: response.data.clues.across[i],

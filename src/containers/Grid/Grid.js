@@ -12,22 +12,17 @@ import classes from './Grid.module.css';
 class Grid extends Component {
   state = {
     gridValues: null,
-    clueDirection: CLUE_DIRECTION.Across,
+    clueDirection: CLUE_DIRECTION.Down,
     puzzleData: null
   }
 
   componentDidMount () {
     mockPuzzle()
     .then (data => {
-      const grid = new Array(data.columns);
+      const grid = new Array(data.columns * data.rows);
 
-      let counter = 0;
       for (let i = 0; i < grid.length; i++) {
-        grid[i] = new Array(data.rows);
-        for (let j = 0; j < grid[i].length; j++) {
-          grid[i][j] = {focus: false, type: data.gridNums[counter], value: ''};
-          counter++;
-        }
+        grid[i] = {focus: false, type: data.gridNums[i], value: ''};
       }
 
       this.setState({
@@ -40,65 +35,60 @@ class Grid extends Component {
     });
   }
 
-  squareClickedHandler = (row, col) => {
+  squareClickedHandler = (index) => {
     const grid = [...this.state.gridValues];
 
     for (let i = 0; i < grid.length; i++) {
-      for (let j = 0; j < grid[i].length; j++) {
-        if (i === row && j === col) {
-          grid[i][j] = {...grid[i][j], focus: true};
-        } else {
-          grid[i][j] = {...grid[i][j], focus: false};
-        }
+      if (i === index) {
+        grid[i] = {...grid[i], focus: true};
+      } else {
+        grid[i] = {...grid[i], focus: false};
       }
     }
 
     this.setState({gridValues: grid})
   }
 
-  getNextSquarePoints = (grid, currentRow, currentColumn) => {
+  getNextSquarePoints = (currentElement) => {
     let gotValidSquare = false;
+    let nextElement = currentElement;
 
     while(!gotValidSquare) {
       if (this.state.clueDirection === CLUE_DIRECTION.Across) {
-        if (currentColumn + 1 > grid[currentRow].length - 1) {
-          currentColumn = 0;
-          currentRow = currentRow + 1 > grid.length - 1 ? 0 : currentRow + 1;
-        } else {
-          currentColumn += 1;
+        nextElement++;
+
+        if (nextElement >= this.state.gridValues.length) {
+          nextElement = 0;
         }
       }
   
       if (this.state.clueDirection === CLUE_DIRECTION.Down) {
-        if (currentRow + 1 > grid.length - 1) {
-          currentRow = 0;
-          currentColumn = currentColumn + 1 > grid[currentRow].length - 1 ? 0 : currentColumn + 1;
-        } else {
-          currentRow += 1;
+        nextElement += this.state.puzzleData.columns;
+
+        if (nextElement >= this.state.gridValues.length) {
+          nextElement = (nextElement - this.state.gridValues.length) + 1;
         }
       }
 
-      if (grid[currentRow][currentColumn].type !== 'B') {
+      if (this.state.gridValues[nextElement].type !== 'B') {
         gotValidSquare = true;
       }
     }
     
-    return [currentRow, currentColumn];
+    return nextElement;
   }
 
   keyPressedHandler = (button) => {
     const grid = [...this.state.gridValues];
 
     for (let i = 0; i < grid.length; i++) {
-      for (let j = 0; j < grid[i].length; j++) {
-        if (grid[i][j].focus) {
-          grid[i][j] = {...grid[i][j], value: button};
-          const nextSquarePoints = this.getNextSquarePoints(grid, i, j);
-          grid[i][j].focus = false;
-          grid[nextSquarePoints[0]][nextSquarePoints[1]].focus = true;
-          this.setState({gridValues: grid});
-          return;
-        }
+      if (grid[i].focus) {
+        grid[i] = {...grid[i], value: button};
+        grid[i].focus = false;
+        const nextElement = this.getNextSquarePoints(i);
+        grid[nextElement].focus = true;
+        this.setState({gridValues: grid});
+        return;
       }
     }
   }
@@ -109,15 +99,13 @@ class Grid extends Component {
 
     if (this.state.gridValues) {
       squares = [];
-      for (let i = 0; i < this.state.puzzleData.columns; i++) {
-        for (let j = 0; j < this.state.puzzleData.rows; j++) {
+      for (let i = 0; i < this.state.gridValues.length; i++) {
           squares.push(
             <Square key={key++} 
-              focused={this.state.gridValues[i][j].focus}
-              value = {this.state.gridValues[i][j].value}
-              type={this.state.gridValues[i][j].type} 
-              clicked={() => this.squareClickedHandler(i, j)} />);
-        }
+              focused={this.state.gridValues[i].focus}
+              value = {this.state.gridValues[i].value}
+              type={this.state.gridValues[i].type} 
+              clicked={() => this.squareClickedHandler(i)} />);
       }
     }
 
