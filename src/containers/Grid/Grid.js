@@ -48,6 +48,7 @@ class Grid extends Component {
     grid[focusedElement].focus = true;
 
     for (let i = 0; i < grid.length; i++) {
+      grid[i].semiFocus = false;
       if (!grid[i].focus) {
         if (clueDirection === CLUE_DIRECTION.Across) {
           if (clueNumbers.across === grid[i].clueNumber.across) {
@@ -60,7 +61,6 @@ class Grid extends Component {
         }
       }
     }
-    console.log(grid);
   }
 
   squareClickedHandler = (index) => {
@@ -116,10 +116,16 @@ class Grid extends Component {
 
     for (let i = 0; i < grid.length; i++) {
       if (grid[i].focus) {
-        grid[i] = {...grid[i], value: button};
-        grid[i].focus = false;
-        const nextElement = this.getNextSquarePoints(i);
-        grid[nextElement].focus = true;
+        grid[i] = {...grid[i]};
+        if (button === "{bksp}") {
+          grid[i].value = '';
+        } else {
+          grid[i].value = button;
+          grid[i].focus = false;
+          const nextElement = this.getNextSquarePoints(i);
+          this.setFocusToWholeClue(grid, nextElement, this.state.clueDirection);
+        }
+
         this.setState({gridValues: grid});
         return;
       }
