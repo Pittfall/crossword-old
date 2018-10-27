@@ -6,27 +6,32 @@ export const mockPuzzle = () => {
     .then(response => {
       console.log(response.data);
       let retData  = {
-        across: {},
-        down: {},
+        clues: {
+          across: {},
+          down: {}
+        },
         grid: {},
-        rows: 0,
-        columns: 0
+        size: {
+          rows: response.data.size.rows,
+          columns: response.data.size.cols
+        }
       };
-
-      for (let i = 0; i < response.data.clues.across.length; ++i) {
-        retData.rows = response.data.size.rows;
-        retData.columns = response.data.size.cols;
-        retData.across[i] = {
+      
+      retData.clues.across = response.data.clues.across.map((key, i) => {
+        return {
           number: GetNumberFromClue(response.data.clues.across[i]),
           clue: response.data.clues.across[i],
           answer: response.data.answers.across[i]
         }
-        retData.down[i] = {
+      });
+
+      retData.clues.down = response.data.clues.down.map((key, i) => {
+        return {
           number: GetNumberFromClue(response.data.clues.down[i]),
           clue: response.data.clues.down[i],
           answer: response.data.answers.down[i]
         }
-      }
+      });
 
       let clueNumber = response.data.gridnums[0];
 
@@ -92,8 +97,6 @@ export const mockPuzzle = () => {
           finished = true;
         }
       }
-
-
 
       console.log(retData);
 

@@ -12,14 +12,14 @@ import classes from './Grid.module.css';
 class Grid extends Component {
   state = {
     gridValues: null,
-    clueDirection: CLUE_DIRECTION.Down,
+    clueDirection: CLUE_DIRECTION.Across,
     puzzleData: null
   }
 
   componentDidMount () {
     mockPuzzle()
     .then (data => {
-      const grid = new Array(data.columns * data.rows);
+      const grid = new Array(data.size.columns * data.size.rows);
 
       for (let i = 0; i < grid.length; i++) {
         grid[i] = {focus: false, type: data.grid[i].type, value: ''};
@@ -63,7 +63,7 @@ class Grid extends Component {
       }
   
       if (this.state.clueDirection === CLUE_DIRECTION.Down) {
-        nextElement += this.state.puzzleData.columns;
+        nextElement += this.state.puzzleData.size.columns;
 
         if (nextElement >= this.state.gridValues.length) {
           nextElement = (nextElement - this.state.gridValues.length) + 1;
