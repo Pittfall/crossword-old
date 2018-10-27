@@ -1,0 +1,10 @@
+.Clue {
+  width: 100%;
+  text-align: center;
+  display: inline-block;
+  background-color: burlywood;
+}
+
+.Clue p {
+  margin: auto;
+}

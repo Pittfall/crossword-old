@@ -1,11 +1,12 @@
 import React, { Fragment, Component } from 'react';
 
-import Square from '../../components/Square/Square';
+import Square from '../../components/Grid/Square/Square';
+import Clue from '../../components/Grid/Clue/Clue';
 import Keyboard from '../../components/Keyboard/Keyboard';
+import Spinner from '../../UI/Spinner/Spinner';
 
 import { CLUE_DIRECTION } from '../../constants/constants';
 import { mockPuzzle } from '../../CrosswordData/NYTData/NYTData';
-import Spinner from '../../UI/Spinner/Spinner';
 
 import classes from './Grid.module.css';
 
@@ -25,6 +26,8 @@ class Grid extends Component {
         grid[i] = {focus: false, type: data.grid[i].type, value: ''};
       }
 
+      grid[0].focus = true;
+
       this.setState({
         gridValues: grid,
         puzzleData: data
@@ -37,16 +40,21 @@ class Grid extends Component {
 
   squareClickedHandler = (index) => {
     const grid = [...this.state.gridValues];
+    let clueDirection = this.state.clueDirection;
 
     for (let i = 0; i < grid.length; i++) {
       if (i === index) {
+        if (grid[i].focus) {
+          clueDirection = (clueDirection === CLUE_DIRECTION.Across) ? CLUE_DIRECTION.Down : CLUE_DIRECTION.Across;
+        }
+
         grid[i] = {...grid[i], focus: true};
       } else {
         grid[i] = {...grid[i], focus: false};
       }
     }
 
-    this.setState({gridValues: grid})
+    this.setState({gridValues: grid, clueDirection: clueDirection});
   }
 
   getNextSquarePoints = (currentElement) => {
@@ -93,15 +101,39 @@ class Grid extends Component {
     }
   }
 
+  getClue = () => {
+    let clueNumbers = {};
+    for (let i = 0; i < this.state.gridValues.length; i++) {
+      if (this.state.gridValues[i].focus) {
+        clueNumbers = this.state.puzzleData.grid[i].clueNumber;
+        break;
+      }
+    }
+    let retClue = null;
+
+    if (this.state.clueDirection === CLUE_DIRECTION.Across) {
+      retClue = this.state.puzzleData.clues.across.find(key => {
+        return +key.number === clueNumbers.across;
+      });
+    } else {
+      retClue = this.state.puzzleData.clues.down.find(key => {
+        return +key.number === clueNumbers.down;
+      });
+    }
+
+    console.log(retClue);
+
+    return retClue.clue;
+  }
+
   render () {
     let squares = null;
-    let key = 0;
 
     if (this.state.gridValues) {
       squares = [];
       for (let i = 0; i < this.state.gridValues.length; i++) {
           squares.push(
-            <Square key={key++} 
+            <Square key={i}
               focused={this.state.gridValues[i].focus}
               value = {this.state.gridValues[i].value}
               type={this.state.gridValues[i].type} 
@@ -114,6 +146,7 @@ class Grid extends Component {
     if (squares) {
       content = <div className={classes.Grid}>
         {squares}
+        <Clue clue={this.getClue()} />
         <Keyboard keyPress={(button) => this.keyPressedHandler(button)} />
       </div>
     }

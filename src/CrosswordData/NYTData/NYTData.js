@@ -39,7 +39,7 @@ export const mockPuzzle = () => {
         const values = {
           type: null,
           clueNumber: {
-            accross: null,
+            across: null,
             down: null,
           },
           answer: null
@@ -53,7 +53,7 @@ export const mockPuzzle = () => {
             }
           } else {
             values.type = 'W';
-            values.clueNumber.accross = clueNumber;
+            values.clueNumber.across = clueNumber;
           }
         } else {
           values.type = response.data.gridnums[i];
@@ -63,7 +63,7 @@ export const mockPuzzle = () => {
           if (i % response.data.size.cols === 0) {
             clueNumber = response.data.gridnums[i];
           }
-          values.clueNumber.accross = clueNumber;
+          values.clueNumber.across = clueNumber;
         }
 
         return values;
