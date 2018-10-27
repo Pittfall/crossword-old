@@ -174,8 +174,10 @@ class Grid extends Component {
     let content = <Spinner />;
 
     if (squares) {
-      content = <div className={classes.Grid}>
-        {squares}
+      content = <div className={classes.Content}>
+        <div className={classes.Grid}>
+          {squares}
+        </div>
         <Clue clue={this.getClue()} />
         <Keyboard keyPress={(button) => this.keyPressedHandler(button)} />
       </div>
