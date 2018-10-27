@@ -22,7 +22,7 @@ class Grid extends Component {
       const grid = new Array(data.columns * data.rows);
 
       for (let i = 0; i < grid.length; i++) {
-        grid[i] = {focus: false, type: data.gridNums[i], value: ''};
+        grid[i] = {focus: false, type: data.grid[i].type, value: ''};
       }
 
       this.setState({
