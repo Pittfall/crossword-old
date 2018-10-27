@@ -23,10 +23,15 @@ class Grid extends Component {
       const grid = new Array(data.size.columns * data.size.rows);
 
       for (let i = 0; i < grid.length; i++) {
-        grid[i] = {focus: false, type: data.grid[i].type, value: ''};
+        grid[i] = {
+          focus: false,
+          semiFocus: false,
+          type: data.grid[i].type, 
+          clueNumber: data.grid[i].clueNumber, 
+          value: ''};
       }
 
-      grid[0].focus = true;
+      this.setFocusToWholeClue(grid, 0, this.state.clueDirection);
 
       this.setState({
         gridValues: grid,
@@ -38,6 +43,26 @@ class Grid extends Component {
     });
   }
 
+  setFocusToWholeClue (grid, focusedElement, clueDirection) {
+    let clueNumbers = grid[focusedElement].clueNumber;
+    grid[focusedElement].focus = true;
+
+    for (let i = 0; i < grid.length; i++) {
+      if (!grid[i].focus) {
+        if (clueDirection === CLUE_DIRECTION.Across) {
+          if (clueNumbers.across === grid[i].clueNumber.across) {
+            grid[i].semiFocus = true;
+          }
+        } else {
+          if (clueNumbers.down === grid[i].clueNumber.down) {
+            grid[i].semiFocus = true;
+          }
+        }
+      }
+    }
+    console.log(grid);
+  }
+
   squareClickedHandler = (index) => {
     const grid = [...this.state.gridValues];
     let clueDirection = this.state.clueDirection;
@@ -47,12 +72,12 @@ class Grid extends Component {
         if (grid[i].focus) {
           clueDirection = (clueDirection === CLUE_DIRECTION.Across) ? CLUE_DIRECTION.Down : CLUE_DIRECTION.Across;
         }
-
-        grid[i] = {...grid[i], focus: true};
       } else {
-        grid[i] = {...grid[i], focus: false};
+        grid[i] = {...grid[i], focus: false, semiFocus: false};
       }
     }
+
+    this.setFocusToWholeClue(grid, index, clueDirection);
 
     this.setState({gridValues: grid, clueDirection: clueDirection});
   }
@@ -105,7 +130,7 @@ class Grid extends Component {
     let clueNumbers = {};
     for (let i = 0; i < this.state.gridValues.length; i++) {
       if (this.state.gridValues[i].focus) {
-        clueNumbers = this.state.puzzleData.grid[i].clueNumber;
+        clueNumbers = this.state.gridValues[i].clueNumber;
         break;
       }
     }
@@ -121,8 +146,6 @@ class Grid extends Component {
       });
     }
 
-    console.log(retClue);
-
     return retClue.clue;
   }
 
@@ -135,6 +158,7 @@ class Grid extends Component {
           squares.push(
             <Square key={i}
               focused={this.state.gridValues[i].focus}
+              semiFocused={this.state.gridValues[i].semiFocus}
               value = {this.state.gridValues[i].value}
               type={this.state.gridValues[i].type} 
               clicked={() => this.squareClickedHandler(i)} />);

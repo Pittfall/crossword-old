@@ -17,6 +17,10 @@ const square = (props) => {
     squareCSS = [...squareCSS, classes.Numbered]
   }
 
+  if (props.semiFocused) {
+    squareCSS = [...squareCSS, classes.SemiFocused];
+  }
+
   if (props.focused) {
     squareCSS = [...squareCSS, classes.Focused];
   }
