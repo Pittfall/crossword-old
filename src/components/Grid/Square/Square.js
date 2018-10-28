@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { SQUARE_TYPE } from '../../../constants/constants';
 import classes from './Square.module.css';
 
 const square = (props) => {
@@ -7,14 +8,16 @@ const square = (props) => {
   let squareCSS = [classes.Square];
   let clicked = props.clicked;
 
-  if (isNaN(squareType)) {
-    if (squareType === 'B') {
+  switch (squareType) {
+    case SQUARE_TYPE.Black:
       squareCSS = [...squareCSS, classes.Black];
       clicked = null;
-    }
-  }
-  else {
-    squareCSS = [...squareCSS, classes.Numbered]
+      break;
+    case SQUARE_TYPE.Numbered:
+      squareCSS = [...squareCSS, classes.Numbered];
+      break;
+    default:
+      break;
   }
 
   if (props.semiFocused) {

@@ -1,10 +1,12 @@
 import { GetMockPuzzle } from '../../Http/API/API';
+import { SQUARE_TYPE } from '../../constants/constants';
 
 export const mockPuzzle = () => {
   return new Promise((resolve, reject) => {
     GetMockPuzzle()
     .then(response => {
-      console.log(response.data);
+      const puzzleData = response.data;
+      //console.log(puzzleData);
       let retData  = {
         clues: {
           across: {},
@@ -12,93 +14,93 @@ export const mockPuzzle = () => {
         },
         grid: {},
         size: {
-          rows: response.data.size.rows,
-          columns: response.data.size.cols
+          rows: puzzleData.size.rows,
+          columns: puzzleData.size.cols
         }
       };
       
-      retData.clues.across = response.data.clues.across.map((key, i) => {
+      retData.clues.across = puzzleData.clues.across.map((key, i) => {
         return {
-          number: GetNumberFromClue(response.data.clues.across[i]),
-          clue: response.data.clues.across[i],
-          answer: response.data.answers.across[i]
+          number: GetNumberFromClue(puzzleData.clues.across[i]),
+          clue: puzzleData.clues.across[i],
+          answer: puzzleData.answers.across[i]
         }
       });
 
-      retData.clues.down = response.data.clues.down.map((key, i) => {
+      retData.clues.down = puzzleData.clues.down.map((key, i) => {
         return {
-          number: GetNumberFromClue(response.data.clues.down[i]),
-          clue: response.data.clues.down[i],
-          answer: response.data.answers.down[i]
+          number: GetNumberFromClue(puzzleData.clues.down[i]),
+          clue: puzzleData.clues.down[i],
+          answer: puzzleData.answers.down[i]
         }
       });
 
-      let clueNumber = response.data.gridnums[0];
+      let clueNumber = puzzleData.gridnums[0];
 
-      retData.grid = response.data.gridnums.map((key, i) => {
+      retData.grid = puzzleData.gridnums.map((key, i) => {
         const values = {
           type: null,
-          clueNumber: {
+          clueNumbers: {
             across: null,
             down: null,
           },
-          answer: null
+          answer: puzzleData.grid[i]
         }
 
-        if (response.data.gridnums[i] === 0) {
-          if (response.data.grid[i] === '.') {
-            values.type = 'B';
-            if (i + 1 < response.data.gridnums.length) {
-              clueNumber = response.data.gridnums[i + 1];
+        if (puzzleData.gridnums[i] === 0) {
+          if (puzzleData.grid[i] === '.') {
+            values.type = SQUARE_TYPE.Black;
+            if (i + 1 < puzzleData.gridnums.length) {
+              clueNumber = puzzleData.gridnums[i + 1];
             }
           } else {
-            values.type = 'W';
-            values.clueNumber.across = clueNumber;
+            values.type = SQUARE_TYPE.Empty;
+            values.clueNumbers.across = clueNumber;
           }
         } else {
-          values.type = response.data.gridnums[i];
+          values.type = SQUARE_TYPE.Numbered;
 
           // If the current element we are on is divisible by the number of columns,
           // we are on the next row.
-          if (i % response.data.size.cols === 0) {
-            clueNumber = response.data.gridnums[i];
+          if (i % puzzleData.size.cols === 0) {
+            clueNumber = puzzleData.gridnums[i];
           }
-          values.clueNumber.across = clueNumber;
+          values.clueNumbers.across = clueNumber;
         }
 
         return values;
       });
 
-      clueNumber = response.data.gridnums[0];
+      clueNumber = puzzleData.gridnums[0];
       let elementNumber = 0;
       let finished = false;
       
       while (!finished) {
-        if (retData.grid[elementNumber].type === 'B') {
-          elementNumber += response.data.size.cols;
-          if (elementNumber >= response.data.gridnums.length) {
-            elementNumber = elementNumber - response.data.gridnums.length + 1;
+        if (retData.grid[elementNumber].type === SQUARE_TYPE.Black) {
+          elementNumber += puzzleData.size.cols;
+          if (elementNumber >= puzzleData.gridnums.length) {
+            elementNumber = elementNumber - puzzleData.gridnums.length + 1;
           } 
-          clueNumber = response.data.gridnums[elementNumber];
+          clueNumber = puzzleData.gridnums[elementNumber];
           continue;
         }
 
-        retData.grid[elementNumber].clueNumber.down = clueNumber;
+        retData.grid[elementNumber].clueNumbers.down = clueNumber;
 
-        elementNumber += response.data.size.cols;
-        if (elementNumber >= response.data.gridnums.length) {
-          elementNumber = elementNumber - response.data.gridnums.length + 1;
-          clueNumber = response.data.gridnums[elementNumber];
+        elementNumber += puzzleData.size.cols;
+        if (elementNumber >= puzzleData.gridnums.length) {
+          elementNumber = elementNumber - puzzleData.gridnums.length + 1;
+          clueNumber = puzzleData.gridnums[elementNumber];
         }
 
         // On the last element.
-        if (elementNumber === response.data.gridnums.length - 1) {
-          retData.grid[elementNumber].clueNumber.down = clueNumber;
+        if (elementNumber === puzzleData.gridnums.length - 1) {
+          retData.grid[elementNumber].clueNumbers.down = clueNumber;
           finished = true;
         }
       }
 
-      console.log(retData);
+      //console.log(retData);
 
       resolve(retData);
     })

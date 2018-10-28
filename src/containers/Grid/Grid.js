@@ -5,7 +5,7 @@ import Clue from '../../components/Grid/Clue/Clue';
 import Keyboard from '../../components/Keyboard/Keyboard';
 import Spinner from '../../UI/Spinner/Spinner';
 
-import { CLUE_DIRECTION } from '../../constants/constants';
+import { CLUE_DIRECTION, SQUARE_TYPE } from '../../constants/constants';
 import { mockPuzzle } from '../../CrosswordData/NYTData/NYTData';
 
 import classes from './Grid.module.css';
@@ -26,12 +26,12 @@ class Grid extends Component {
         grid[i] = {
           focus: false,
           semiFocus: false,
-          type: data.grid[i].type, 
-          clueNumber: data.grid[i].clueNumber, 
+          type: data.grid[i].type,
+          clueNumbers: data.grid[i].clueNumbers, 
           value: ''};
       }
 
-      this.setFocusToWholeClue(grid, 0, this.state.clueDirection);
+      this.setFocusToClue(grid, 0, this.state.clueDirection);
 
       this.setState({
         gridValues: grid,
@@ -43,19 +43,19 @@ class Grid extends Component {
     });
   }
 
-  setFocusToWholeClue (grid, focusedElement, clueDirection) {
-    let clueNumbers = grid[focusedElement].clueNumber;
+  setFocusToClue (grid, focusedElement, clueDirection) {
+    let clueNumbers = grid[focusedElement].clueNumbers;
     grid[focusedElement].focus = true;
 
     for (let i = 0; i < grid.length; i++) {
       grid[i].semiFocus = false;
       if (!grid[i].focus) {
         if (clueDirection === CLUE_DIRECTION.Across) {
-          if (clueNumbers.across === grid[i].clueNumber.across) {
+          if (clueNumbers.across === grid[i].clueNumbers.across) {
             grid[i].semiFocus = true;
           }
         } else {
-          if (clueNumbers.down === grid[i].clueNumber.down) {
+          if (clueNumbers.down === grid[i].clueNumbers.down) {
             grid[i].semiFocus = true;
           }
         }
@@ -77,7 +77,7 @@ class Grid extends Component {
       }
     }
 
-    this.setFocusToWholeClue(grid, index, clueDirection);
+    this.setFocusToClue(grid, index, clueDirection);
 
     this.setState({gridValues: grid, clueDirection: clueDirection});
   }
@@ -103,7 +103,7 @@ class Grid extends Component {
         }
       }
 
-      if (this.state.gridValues[nextElement].type !== 'B') {
+      if (this.state.gridValues[nextElement].type !== SQUARE_TYPE.Black) {
         gotValidSquare = true;
       }
     }
@@ -123,7 +123,7 @@ class Grid extends Component {
           grid[i].value = button;
           grid[i].focus = false;
           const nextElement = this.getNextSquarePoints(i);
-          this.setFocusToWholeClue(grid, nextElement, this.state.clueDirection);
+          this.setFocusToClue(grid, nextElement, this.state.clueDirection);
         }
 
         this.setState({gridValues: grid});
@@ -136,7 +136,7 @@ class Grid extends Component {
     let clueNumbers = {};
     for (let i = 0; i < this.state.gridValues.length; i++) {
       if (this.state.gridValues[i].focus) {
-        clueNumbers = this.state.gridValues[i].clueNumber;
+        clueNumbers = this.state.gridValues[i].clueNumbers;
         break;
       }
     }
