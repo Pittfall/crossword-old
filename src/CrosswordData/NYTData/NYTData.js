@@ -1,5 +1,5 @@
 import { GetNYTPuzzle } from '../../Http/API/API';
-import { CROSSWORD_DATA, SQUARE_TYPE } from '../../constants/constants';
+import { CrosswordData, SquareData, SQUARE_TYPE } from '../../constants/constants';
 
 export const NYTPuzzle = (publishDate) => {
   return new Promise((resolve, reject) => {
@@ -12,7 +12,7 @@ export const NYTPuzzle = (publishDate) => {
 
       const puzzleData = response.data;
       console.log(puzzleData);
-      let retData  = CROSSWORD_DATA;
+      let retData  = new CrosswordData();
 
       retData.size.columns = puzzleData.size.cols;
       retData.size.rows = puzzleData.size.rows;
@@ -36,17 +36,8 @@ export const NYTPuzzle = (publishDate) => {
       let clueNumber = puzzleData.gridnums[0];
 
       retData.gridSquares = puzzleData.gridnums.map((key, i) => {
-        const values = {
-          type: null,
-          clueNumbers: {
-            across: null,
-            down: null,
-          },
-          answer: puzzleData.grid[i],
-          focus: false,
-          semiFocus: false,
-          userValue: ''
-        }
+        const values = new SquareData();
+        values.answer = puzzleData.grid[i]
 
         if (puzzleData.gridnums[i] === NYT_SQUARE_TYPE.UNNUMBERED) {
           if (puzzleData.grid[i] === NYT_SQUARE_TYPE.BLACK) {

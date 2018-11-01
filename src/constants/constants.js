@@ -1,12 +1,30 @@
-export const CROSSWORD_DATA = {
-  clues: {
-    across: {},
-    down: {}
-  },
-  gridSquares: {},
-  size: {
-      rows: 0,
-      columns: 0
+export class SquareData {
+  constructor () {
+    this.type = null;
+    this.clueNumbers = {
+      across: null,
+      down: null,
+    }
+    this.answer = '';
+    this.userData =  {
+      focus: false,
+      semiFocus: false,
+      userValue: ''
+    }
+  }
+}
+
+export class CrosswordData {
+  constructor () {
+    this.gridSquares = new SquareData();
+    this.clues = {
+      across: {},
+      down: {}
+    }
+    this.size = {
+        rows: 0,
+        columns: 0
+    }
   }
 }
 
