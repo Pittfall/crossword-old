@@ -1,4 +1,5 @@
 import React, { Fragment, Component } from 'react';
+import { connect } from 'react-redux';
 
 import Square from '../../components/Grid/Square/Square';
 import Clue from '../../components/Grid/Clue/Clue';
@@ -6,7 +7,8 @@ import Keyboard from '../../components/Keyboard/Keyboard';
 import Spinner from '../../UI/Spinner/Spinner';
 
 import { CLUE_DIRECTION, SQUARE_TYPE } from '../../constants/constants';
-import { mockPuzzle } from '../../CrosswordData/NYTData/NYTData';
+import { NYTPuzzle } from '../../CrosswordData/NYTData/NYTData';
+import { initCrossword } from '../../store/actions/grid';
 
 import classes from './Grid.module.css';
 
@@ -18,7 +20,7 @@ class Grid extends Component {
   }
 
   componentDidMount () {
-    mockPuzzle()
+    NYTPuzzle('2017/01/04')
     .then (data => {
       const grid = new Array(data.size.columns * data.size.rows);
 
@@ -26,9 +28,10 @@ class Grid extends Component {
         grid[i] = {
           focus: false,
           semiFocus: false,
-          type: data.grid[i].type,
-          clueNumbers: data.grid[i].clueNumbers, 
-          value: ''};
+          type: data.gridSquares[i].type,
+          clueNumbers: data.gridSquares[i].clueNumbers, 
+          value: ''
+        };
       }
 
       this.setFocusToClue(grid, 0, this.state.clueDirection);
@@ -191,4 +194,16 @@ class Grid extends Component {
   }
 }
 
-export default Grid;
+const mapStateToProps = state => {
+  return {
+    gridValues: state.crossword
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onInitCrossword: () => dispatch(initCrossword())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Grid);

@@ -1,23 +1,21 @@
-import { GetMockPuzzle } from '../../Http/API/API';
-import { SQUARE_TYPE } from '../../constants/constants';
+import { GetNYTPuzzle } from '../../Http/API/API';
+import { CROSSWORD_DATA, SQUARE_TYPE } from '../../constants/constants';
 
-export const mockPuzzle = () => {
+export const NYTPuzzle = (publishDate) => {
   return new Promise((resolve, reject) => {
-    GetMockPuzzle()
+    GetNYTPuzzle(publishDate)
     .then(response => {
+      const NYT_SQUARE_TYPE = Object.freeze({
+        UNNUMBERED: 0,
+        BLACK: '.'
+      });
+
       const puzzleData = response.data;
-      //console.log(puzzleData);
-      let retData  = {
-        clues: {
-          across: {},
-          down: {}
-        },
-        grid: {},
-        size: {
-          rows: puzzleData.size.rows,
-          columns: puzzleData.size.cols
-        }
-      };
+      console.log(puzzleData);
+      let retData  = CROSSWORD_DATA;
+
+      retData.size.columns = puzzleData.size.cols;
+      retData.size.rows = puzzleData.size.rows;
       
       retData.clues.across = puzzleData.clues.across.map((key, i) => {
         return {
@@ -37,18 +35,21 @@ export const mockPuzzle = () => {
 
       let clueNumber = puzzleData.gridnums[0];
 
-      retData.grid = puzzleData.gridnums.map((key, i) => {
+      retData.gridSquares = puzzleData.gridnums.map((key, i) => {
         const values = {
           type: null,
           clueNumbers: {
             across: null,
             down: null,
           },
-          answer: puzzleData.grid[i]
+          answer: puzzleData.grid[i],
+          focus: false,
+          semiFocus: false,
+          userValue: ''
         }
 
-        if (puzzleData.gridnums[i] === 0) {
-          if (puzzleData.grid[i] === '.') {
+        if (puzzleData.gridnums[i] === NYT_SQUARE_TYPE.UNNUMBERED) {
+          if (puzzleData.grid[i] === NYT_SQUARE_TYPE.BLACK) {
             values.type = SQUARE_TYPE.Black;
             if (i + 1 < puzzleData.gridnums.length) {
               clueNumber = puzzleData.gridnums[i + 1];
@@ -76,7 +77,7 @@ export const mockPuzzle = () => {
       let finished = false;
       
       while (!finished) {
-        if (retData.grid[elementNumber].type === SQUARE_TYPE.Black) {
+        if (retData.gridSquares[elementNumber].type === SQUARE_TYPE.Black) {
           elementNumber += puzzleData.size.cols;
           if (elementNumber >= puzzleData.gridnums.length) {
             elementNumber = elementNumber - puzzleData.gridnums.length + 1;
@@ -85,7 +86,7 @@ export const mockPuzzle = () => {
           continue;
         }
 
-        retData.grid[elementNumber].clueNumbers.down = clueNumber;
+        retData.gridSquares[elementNumber].clueNumbers.down = clueNumber;
 
         elementNumber += puzzleData.size.cols;
         if (elementNumber >= puzzleData.gridnums.length) {
@@ -95,7 +96,7 @@ export const mockPuzzle = () => {
 
         // On the last element.
         if (elementNumber === puzzleData.gridnums.length - 1) {
-          retData.grid[elementNumber].clueNumbers.down = clueNumber;
+          retData.gridSquares[elementNumber].clueNumbers.down = clueNumber;
           finished = true;
         }
       }
