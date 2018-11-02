@@ -15,6 +15,15 @@ export const initCrossword = () => {
    }
 }
 
+export const updateCrossword = (crossword) => {
+  return dispatch => {
+    dispatch({
+      type: actionTypes.UPDATE_CROSSWORD_USER_DATA,
+      crossword: crossword
+    });
+  }
+}
+
 const initCrosswordStart = () => {
    return {
        type: actionTypes.INIT_CROSSWORD
