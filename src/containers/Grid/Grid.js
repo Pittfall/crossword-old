@@ -7,8 +7,7 @@ import Keyboard from '../../components/Keyboard/Keyboard';
 import Spinner from '../../UI/Spinner/Spinner';
 
 import { CLUE_DIRECTION, SQUARE_TYPE } from '../../constants/constants';
-import { NYTPuzzle } from '../../CrosswordData/NYTData/NYTData';
-import { initCrossword } from '../../store/actions/grid';
+import { initCrossword, updateCrossword } from '../../store/actions/grid';
 
 import classes from './Grid.module.css';
 
@@ -20,46 +19,44 @@ class Grid extends Component {
   }
 
   componentDidMount () {
-    NYTPuzzle('2017/01/04')
-    .then (data => {
-      const grid = new Array(data.size.columns * data.size.rows);
+    this.props.onInitCrossword();
+  }
 
-      for (let i = 0; i < grid.length; i++) {
-        grid[i] = {
-          focus: false,
-          semiFocus: false,
-          type: data.gridSquares[i].type,
-          clueNumbers: data.gridSquares[i].clueNumbers, 
-          value: ''
-        };
-      }
-
+  componentWillMount () {
+    debugger;
+    if (this.props.gridSquares) {
+      const grid = this.gridDeepCopy();
       this.setFocusToClue(grid, 0, this.state.clueDirection);
+      this.props.onUpdateCrossword(grid);
+    }
+  }
 
-      this.setState({
-        gridValues: grid,
-        puzzleData: data
-      });
-    })
-    .catch (error => {
-
-    });
+  gridDeepCopy = () => {
+    return {
+      ...this.props.gridValues,
+      clueNumbers: {
+        ...this.props.gridValues.clueNumbers
+      },
+      gridSquares: {
+        ...this.props.gridValues.gridSquares
+      }
+    }
   }
 
   setFocusToClue (grid, focusedElement, clueDirection) {
-    let clueNumbers = grid[focusedElement].clueNumbers;
-    grid[focusedElement].focus = true;
+    let clueNumbers = grid.gridSquares[focusedElement].clueNumbers;
+    grid.gridSquares[focusedElement].userData.focus = true;
 
-    for (let i = 0; i < grid.length; i++) {
-      grid[i].semiFocus = false;
-      if (!grid[i].focus) {
+    for (let i = 0; i < grid.gridSquares.length; i++) {
+      grid.gridSquares[i].userData.semiFocus = false;
+      if (!grid.gridSquares[i].userData.focus) {
         if (clueDirection === CLUE_DIRECTION.Across) {
-          if (clueNumbers.across === grid[i].clueNumbers.across) {
-            grid[i].semiFocus = true;
+          if (clueNumbers.across === grid.gridSquares[i].clueNumbers.across) {
+            grid.gridSquares[i].userData.semiFocus = true;
           }
         } else {
-          if (clueNumbers.down === grid[i].clueNumbers.down) {
-            grid[i].semiFocus = true;
+          if (clueNumbers.down === grid.gridSquares[i].clueNumbers.down) {
+            grid.gridSquares[i].userData.semiFocus = true;
           }
         }
       }
@@ -67,22 +64,21 @@ class Grid extends Component {
   }
 
   squareClickedHandler = (index) => {
-    const grid = [...this.state.gridValues];
+    const grid = this.gridDeepCopy();
     let clueDirection = this.state.clueDirection;
 
-    for (let i = 0; i < grid.length; i++) {
+    for (let i = 0; i < grid.userData[i]; i++) {
       if (i === index) {
-        if (grid[i].focus) {
+        if (grid.userData[i].focus) {
           clueDirection = (clueDirection === CLUE_DIRECTION.Across) ? CLUE_DIRECTION.Down : CLUE_DIRECTION.Across;
         }
       } else {
-        grid[i] = {...grid[i], focus: false, semiFocus: false};
+        grid.userData[i] = {...grid.userData[i], focus: false, semiFocus: false};
       }
     }
 
     this.setFocusToClue(grid, index, clueDirection);
-
-    this.setState({gridValues: grid, clueDirection: clueDirection});
+    this.props.onUpdateCrossword(grid);
   }
 
   getNextSquarePoints = (currentElement) => {
@@ -137,20 +133,20 @@ class Grid extends Component {
 
   getClue = () => {
     let clueNumbers = {};
-    for (let i = 0; i < this.state.gridValues.length; i++) {
-      if (this.state.gridValues[i].focus) {
-        clueNumbers = this.state.gridValues[i].clueNumbers;
+    for (let i = 0; i < this.props.gridValues.gridSquares.length; i++) {
+      if (this.props.gridValues.gridSquares[i].userData.focus) {
+        clueNumbers = this.props.gridValues.gridSquares[i].clueNumbers;
         break;
       }
     }
     let retClue = null;
 
     if (this.state.clueDirection === CLUE_DIRECTION.Across) {
-      retClue = this.state.puzzleData.clues.across.find(key => {
+      retClue = this.props.gridValues.clues.across.find(key => {
         return +key.number === clueNumbers.across;
       });
     } else {
-      retClue = this.state.puzzleData.clues.down.find(key => {
+      retClue = this.props.gridValues.clues.down.find(key => {
         return +key.number === clueNumbers.down;
       });
     }
@@ -161,15 +157,15 @@ class Grid extends Component {
   render () {
     let squares = null;
 
-    if (this.state.gridValues) {
+    if (this.props.gridValues) {
       squares = [];
-      for (let i = 0; i < this.state.gridValues.length; i++) {
+      for (let i = 0; i < this.props.gridValues.gridSquares.length; i++) {
           squares.push(
             <Square key={i}
-              focused={this.state.gridValues[i].focus}
-              semiFocused={this.state.gridValues[i].semiFocus}
-              value = {this.state.gridValues[i].value}
-              type={this.state.gridValues[i].type} 
+              focused={this.props.gridValues.gridSquares[i].userData.focus}
+              semiFocused={this.props.gridValues.gridSquares[i].userData.semiFocus}
+              value = {this.props.gridValues.gridSquares[i].userData.userValue}
+              type={this.props.gridValues.gridSquares[i].type} 
               clicked={() => this.squareClickedHandler(i)} />);
       }
     }
@@ -202,7 +198,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onInitCrossword: () => dispatch(initCrossword())
+    onInitCrossword: () => dispatch(initCrossword()),
+    onUpdateCrossword: (grid) => dispatch(updateCrossword(grid))
   }
 }
 

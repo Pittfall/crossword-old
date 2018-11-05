@@ -1,18 +1,19 @@
 import * as actionTypes from '../actions/actionTypes';
-import { CrosswordData } from '../../constants/constants';
 
 const initialState = {
-   crossword: new CrosswordData()
+   crossword: null
 }
 
 const reducer = (state = initialState, action) => {
-   switch (action) {
+   switch (action.type) {
       case actionTypes.INIT_CROSSWORD:
-         return { ...state, crossword: new CrosswordData() }
+         return { ...state, crossword: null }
       case actionTypes.INIT_CROSSWORD_SUCCESS:
-         return { ...state, crossword: action.crosswordData }
+         return { ...state, crossword: action.crossword }
       case actionTypes.INIT_CROSSWORD_FAIL:
          return state;
+      case actionTypes.UPDATE_CROSSWORD:
+        return { ...state, crossword: action.crossword }
       default:
          return state;
    }

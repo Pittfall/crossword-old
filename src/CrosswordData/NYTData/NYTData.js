@@ -9,7 +9,7 @@ export const NYTPuzzle = (publishDate) => {
         UNNUMBERED: 0,
         BLACK: '.'
       });
-
+      
       const puzzleData = response.data;
       console.log(puzzleData);
       let retData  = new CrosswordData();
@@ -92,7 +92,7 @@ export const NYTPuzzle = (publishDate) => {
         }
       }
 
-      //console.log(retData);
+      console.log(retData);
 
       resolve(retData);
     })
