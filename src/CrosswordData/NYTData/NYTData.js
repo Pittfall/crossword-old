@@ -1,5 +1,6 @@
 import { GetNYTPuzzle } from '../../Http/API/API';
-import { CrosswordData, SquareData, SQUARE_TYPE } from '../../constants/constants';
+import { SQUARE_TYPE } from '../../constants/constants';
+import { CrosswordGrid, CrosswordSquare } from '../../utilities/grid'
 
 export const NYTPuzzle = (publishDate) => {
   return new Promise((resolve, reject) => {
@@ -12,7 +13,7 @@ export const NYTPuzzle = (publishDate) => {
       
       const puzzleData = response.data;
       console.log(puzzleData);
-      let retData  = new CrosswordData();
+      let retData  = new CrosswordGrid();
 
       retData.size.columns = puzzleData.size.cols;
       retData.size.rows = puzzleData.size.rows;
@@ -35,8 +36,8 @@ export const NYTPuzzle = (publishDate) => {
 
       let clueNumber = puzzleData.gridnums[0];
 
-      retData.gridSquares = puzzleData.gridnums.map((key, i) => {
-        const values = new SquareData();
+      retData.squares = puzzleData.gridnums.map((key, i) => {
+        const values = new CrosswordSquare();
         values.answer = puzzleData.grid[i]
 
         if (puzzleData.gridnums[i] === NYT_SQUARE_TYPE.UNNUMBERED) {
@@ -68,7 +69,7 @@ export const NYTPuzzle = (publishDate) => {
       let finished = false;
       
       while (!finished) {
-        if (retData.gridSquares[elementNumber].type === SQUARE_TYPE.Black) {
+        if (retData.squares[elementNumber].type === SQUARE_TYPE.Black) {
           elementNumber += puzzleData.size.cols;
           if (elementNumber >= puzzleData.gridnums.length) {
             elementNumber = elementNumber - puzzleData.gridnums.length + 1;
@@ -77,7 +78,7 @@ export const NYTPuzzle = (publishDate) => {
           continue;
         }
 
-        retData.gridSquares[elementNumber].clueNumbers.down = clueNumber;
+        retData.squares[elementNumber].clueNumbers.down = clueNumber;
 
         elementNumber += puzzleData.size.cols;
         if (elementNumber >= puzzleData.gridnums.length) {
@@ -87,7 +88,7 @@ export const NYTPuzzle = (publishDate) => {
 
         // On the last element.
         if (elementNumber === puzzleData.gridnums.length - 1) {
-          retData.gridSquares[elementNumber].clueNumbers.down = clueNumber;
+          retData.squares[elementNumber].clueNumbers.down = clueNumber;
           finished = true;
         }
       }

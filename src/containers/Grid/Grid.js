@@ -6,15 +6,14 @@ import Clue from '../../components/Grid/Clue/Clue';
 import Keyboard from '../../components/Keyboard/Keyboard';
 import Spinner from '../../UI/Spinner/Spinner';
 
-import { CLUE_DIRECTION, SQUARE_TYPE } from '../../constants/constants';
-import { initCrossword, updateCrossword } from '../../store/actions/grid';
+import { CLUE_DIRECTION } from '../../constants/constants';
+import { initCrossword, updateCrossword, updateClueDirection } from '../../store/actions/grid';
 
 import classes from './Grid.module.css';
+import { CrosswordGrid } from '../../utilities/grid';
 
 class Grid extends Component {
   state = {
-    gridValues: null,
-    clueDirection: CLUE_DIRECTION.Across,
     puzzleData: null
   }
 
@@ -22,150 +21,51 @@ class Grid extends Component {
     this.props.onInitCrossword();
   }
 
-  componentWillMount () {
-    debugger;
-    if (this.props.gridSquares) {
-      const grid = this.gridDeepCopy();
-      this.setFocusToClue(grid, 0, this.state.clueDirection);
-      this.props.onUpdateCrossword(grid);
-    }
-  }
-
-  gridDeepCopy = () => {
-    return {
-      ...this.props.gridValues,
-      clueNumbers: {
-        ...this.props.gridValues.clueNumbers
-      },
-      gridSquares: {
-        ...this.props.gridValues.gridSquares
-      }
-    }
-  }
-
-  setFocusToClue (grid, focusedElement, clueDirection) {
-    let clueNumbers = grid.gridSquares[focusedElement].clueNumbers;
-    grid.gridSquares[focusedElement].userData.focus = true;
-
-    for (let i = 0; i < grid.gridSquares.length; i++) {
-      grid.gridSquares[i].userData.semiFocus = false;
-      if (!grid.gridSquares[i].userData.focus) {
-        if (clueDirection === CLUE_DIRECTION.Across) {
-          if (clueNumbers.across === grid.gridSquares[i].clueNumbers.across) {
-            grid.gridSquares[i].userData.semiFocus = true;
-          }
-        } else {
-          if (clueNumbers.down === grid.gridSquares[i].clueNumbers.down) {
-            grid.gridSquares[i].userData.semiFocus = true;
-          }
-        }
-      }
-    }
-  }
-
   squareClickedHandler = (index) => {
-    const grid = this.gridDeepCopy();
-    let clueDirection = this.state.clueDirection;
+    const grid = new CrosswordGrid(this.props.crosswordGrid);
+    let clueDirection = this.props.clueDirection;
 
-    for (let i = 0; i < grid.userData[i]; i++) {
-      if (i === index) {
-        if (grid.userData[i].focus) {
-          clueDirection = (clueDirection === CLUE_DIRECTION.Across) ? CLUE_DIRECTION.Down : CLUE_DIRECTION.Across;
-        }
-      } else {
-        grid.userData[i] = {...grid.userData[i], focus: false, semiFocus: false};
-      }
+    if (grid.squares[index].userData.focus) {
+      clueDirection = (clueDirection === CLUE_DIRECTION.Across) ? CLUE_DIRECTION.Down : CLUE_DIRECTION.Across;
+      this.props.onUpdateClueDirection(clueDirection);
     }
 
-    this.setFocusToClue(grid, index, clueDirection);
+    grid.setFocusToClue(index, clueDirection);
     this.props.onUpdateCrossword(grid);
   }
 
-  getNextSquarePoints = (currentElement) => {
-    let gotValidSquare = false;
-    let nextElement = currentElement;
-
-    while(!gotValidSquare) {
-      if (this.state.clueDirection === CLUE_DIRECTION.Across) {
-        nextElement++;
-
-        if (nextElement >= this.state.gridValues.length) {
-          nextElement = 0;
-        }
-      }
-  
-      if (this.state.clueDirection === CLUE_DIRECTION.Down) {
-        nextElement += this.state.puzzleData.size.columns;
-
-        if (nextElement >= this.state.gridValues.length) {
-          nextElement = (nextElement - this.state.gridValues.length) + 1;
-        }
-      }
-
-      if (this.state.gridValues[nextElement].type !== SQUARE_TYPE.Black) {
-        gotValidSquare = true;
-      }
-    }
-    
-    return nextElement;
-  }
-
   keyPressedHandler = (button) => {
-    const grid = [...this.state.gridValues];
+    let grid = new CrosswordGrid(this.props.crosswordGrid);
 
-    for (let i = 0; i < grid.length; i++) {
-      if (grid[i].focus) {
-        grid[i] = {...grid[i]};
+    for (let i = 0; i < grid.squares.length; i++) {
+      if (grid.squares[i].userData.focus) {
+        // TODO: fix this harcode.
         if (button === "{bksp}") {
-          grid[i].value = '';
+          grid.squares[i].userData.value = '';
         } else {
-          grid[i].value = button;
-          grid[i].focus = false;
-          const nextElement = this.getNextSquarePoints(i);
-          this.setFocusToClue(grid, nextElement, this.state.clueDirection);
+          grid.squares[i].userData.value = button;
+          const nextElement = grid.getNextSquare(this.props.clueDirection);
+          grid.setFocusToClue(nextElement, this.props.clueDirection);
         }
 
-        this.setState({gridValues: grid});
+        this.props.onUpdateCrossword(grid);
         return;
       }
     }
   }
 
-  getClue = () => {
-    let clueNumbers = {};
-    for (let i = 0; i < this.props.gridValues.gridSquares.length; i++) {
-      if (this.props.gridValues.gridSquares[i].userData.focus) {
-        clueNumbers = this.props.gridValues.gridSquares[i].clueNumbers;
-        break;
-      }
-    }
-    let retClue = null;
-
-    if (this.state.clueDirection === CLUE_DIRECTION.Across) {
-      retClue = this.props.gridValues.clues.across.find(key => {
-        return +key.number === clueNumbers.across;
-      });
-    } else {
-      retClue = this.props.gridValues.clues.down.find(key => {
-        return +key.number === clueNumbers.down;
-      });
-    }
-
-    return retClue.clue;
-  }
-
   render () {
     let squares = null;
 
-    if (this.props.gridValues) {
+    if (this.props.crosswordGrid) {
       squares = [];
-      for (let i = 0; i < this.props.gridValues.gridSquares.length; i++) {
+      for (let i = 0; i < this.props.crosswordGrid.squares.length; i++) {
           squares.push(
             <Square key={i}
-              focused={this.props.gridValues.gridSquares[i].userData.focus}
-              semiFocused={this.props.gridValues.gridSquares[i].userData.semiFocus}
-              value = {this.props.gridValues.gridSquares[i].userData.userValue}
-              type={this.props.gridValues.gridSquares[i].type} 
+              focused={this.props.crosswordGrid.squares[i].userData.focus}
+              semiFocused={this.props.crosswordGrid.squares[i].userData.semiFocus}
+              value = {this.props.crosswordGrid.squares[i].userData.value}
+              type={this.props.crosswordGrid.squares[i].type} 
               clicked={() => this.squareClickedHandler(i)} />);
       }
     }
@@ -177,7 +77,7 @@ class Grid extends Component {
         <div className={classes.Grid}>
           {squares}
         </div>
-        <Clue clue={this.getClue()} />
+        <Clue clue={this.props.crosswordGrid.getClue(this.props.clueDirection)} />
         <Keyboard keyPress={(button) => this.keyPressedHandler(button)} />
       </div>
     }
@@ -192,14 +92,16 @@ class Grid extends Component {
 
 const mapStateToProps = state => {
   return {
-    gridValues: state.crossword
+    crosswordGrid: state.crosswordGrid,
+    clueDirection: state.clueDirection
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
     onInitCrossword: () => dispatch(initCrossword()),
-    onUpdateCrossword: (grid) => dispatch(updateCrossword(grid))
+    onUpdateCrossword: (crosswordGrid) => dispatch(updateCrossword(crosswordGrid)),
+    onUpdateClueDirection: (clueDirection) => dispatch(updateClueDirection(clueDirection))
   }
 }
 
