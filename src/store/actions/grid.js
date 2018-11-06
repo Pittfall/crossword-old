@@ -2,6 +2,20 @@ import * as actionTypes from './actionTypes';
 import { CROSSWORD_SOURCE } from '../../constants/constants';
 import { NYTPuzzle } from '../../CrosswordData/NYTData/NYTData';
 import { CLUE_DIRECTION } from '../../constants/constants';
+import { squareValues } from '../../firebase/firebase';
+
+export const getSquareValues = () => {
+   return dispatch => {
+   squareValues.on('value', snapshot => {
+         const squareValues = snapshot.val();
+         if (squareValues) {
+            // Initialize values (a 15x15 crossword will be of size 225 for example)
+         } else {
+            dispatch(startGetSquareValues(snapshot.val()));
+         }
+      })
+   }
+}
 
 export const initCrossword = () => {
    return dispatch => {
@@ -24,6 +38,20 @@ export const updateCrossword = (crosswordGrid) => {
          type: actionTypes.UPDATE_CROSSWORD,
          crosswordGrid: crosswordGrid
       });
+   }
+}
+
+export const updateClueDirection = (clueDirection) => {
+   return {
+      type: actionTypes.UPDATE_CLUE_DIRECTION,
+      clueDirection: clueDirection
+   }
+}
+
+const startGetSquareValues = (squareValues) => {
+   return {
+      type: actionTypes.GET_SQUARE_VALUES,
+      squareValues: squareValues
    }
 }
 
@@ -53,12 +81,5 @@ const getCrossword = (source, publishDate) => {
          return NYTPuzzle(publishDate);
       default:
          return NYTPuzzle(publishDate);
-   }
-}
-
-export const updateClueDirection = (clueDirection) => {
-   return {
-      type: actionTypes.UPDATE_CLUE_DIRECTION,
-      clueDirection: clueDirection
    }
 }

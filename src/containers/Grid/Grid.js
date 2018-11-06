@@ -7,7 +7,7 @@ import Keyboard from '../../components/Keyboard/Keyboard';
 import Spinner from '../../UI/Spinner/Spinner';
 
 import { CLUE_DIRECTION } from '../../constants/constants';
-import { initCrossword, updateCrossword, updateClueDirection } from '../../store/actions/grid';
+import { initCrossword, updateCrossword, updateClueDirection, getSquareValues } from '../../store/actions/grid';
 
 import classes from './Grid.module.css';
 import { CrosswordGrid } from '../../utilities/grid';
@@ -101,7 +101,8 @@ const mapDispatchToProps = dispatch => {
   return {
     onInitCrossword: () => dispatch(initCrossword()),
     onUpdateCrossword: (crosswordGrid) => dispatch(updateCrossword(crosswordGrid)),
-    onUpdateClueDirection: (clueDirection) => dispatch(updateClueDirection(clueDirection))
+    onUpdateClueDirection: (clueDirection) => dispatch(updateClueDirection(clueDirection)),
+    onGetSquareValues: () => dispatch(getSquareValues())
   }
 }
 
