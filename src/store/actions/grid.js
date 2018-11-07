@@ -6,14 +6,15 @@ import { squareValues } from '../../firebase/firebase';
 
 export const getSquareValues = () => {
    return dispatch => {
-   squareValues.on('value', snapshot => {
+      squareValues.on('value', snapshot => {
          const squareValues = snapshot.val();
          if (squareValues) {
             // Initialize values (a 15x15 crossword will be of size 225 for example)
+            squareValues.push(new Array(225));
          } else {
             dispatch(startGetSquareValues(snapshot.val()));
          }
-      })
+      });
    }
 }
 
