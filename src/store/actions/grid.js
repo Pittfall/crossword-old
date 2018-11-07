@@ -7,12 +7,13 @@ import { squareValues } from '../../firebase/firebase';
 export const getSquareValues = () => {
    return dispatch => {
       squareValues.on('value', snapshot => {
-         const squareValues = snapshot.val();
-         if (squareValues) {
-            // Initialize values (a 15x15 crossword will be of size 225 for example)
-            squareValues.push(new Array(225));
+         const squares = snapshot.val();
+
+         if (squares) {
+            dispatch(UpdateSquareValues(snapshot.val()));
          } else {
-            dispatch(startGetSquareValues(snapshot.val()));
+            // Initialize values (a 15x15 crossword will be of size 225 for example)
+            squareValues.push().set({1: 'Q'});
          }
       });
    }
@@ -26,6 +27,7 @@ export const initCrossword = () => {
             const crosswordGrid = data;
             crosswordGrid.setFocusToClue(0, CLUE_DIRECTION.Across);
             dispatch(initCrosswordSuccess(crosswordGrid));
+            dispatch(getSquareValues());
          })
          .catch (error => {
             dispatch(initCrosswordError(error));
@@ -49,7 +51,7 @@ export const updateClueDirection = (clueDirection) => {
    }
 }
 
-const startGetSquareValues = (squareValues) => {
+const UpdateSquareValues = (squareValues) => {
    return {
       type: actionTypes.GET_SQUARE_VALUES,
       squareValues: squareValues

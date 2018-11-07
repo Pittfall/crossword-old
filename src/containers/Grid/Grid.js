@@ -5,6 +5,7 @@ import Square from '../../components/Grid/Square/Square';
 import Clue from '../../components/Grid/Clue/Clue';
 import Keyboard from '../../components/Keyboard/Keyboard';
 import Spinner from '../../UI/Spinner/Spinner';
+import { squareValues } from '../../firebase/firebase';
 
 import { CLUE_DIRECTION } from '../../constants/constants';
 import { initCrossword, updateCrossword, updateClueDirection, getSquareValues } from '../../store/actions/grid';
@@ -44,6 +45,7 @@ class Grid extends Component {
           grid.squares[i].userData.value = '';
         } else {
           grid.squares[i].userData.value = button;
+          squareValues.push().set({ [i]: grid.squares[i].userData.value });
           const nextElement = grid.getNextSquare(this.props.clueDirection);
           grid.setFocusToClue(nextElement, this.props.clueDirection);
         }

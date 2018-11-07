@@ -1,5 +1,6 @@
 import * as actionTypes from '../actions/actionTypes';
 import { CLUE_DIRECTION } from '../../constants/constants';
+import { CrosswordGrid } from '../../utilities/grid';
 
 const initialState = {
    crosswordGrid: null,
@@ -18,6 +19,17 @@ const reducer = (state = initialState, action) => {
          return { ...state, crosswordGrid: action.crosswordGrid }
       case actionTypes.UPDATE_CLUE_DIRECTION:
          return { ...state, clueDirection: action.clueDirection }
+      case actionTypes.GET_SQUARE_VALUES:
+            const grid = new CrosswordGrid(state.crosswordGrid);
+
+            for (const key in action.squareValues) {
+               const element = Object.keys(action.squareValues[key])[0];
+               const value = action.squareValues[key][element];
+
+               grid.squares[[element]].userData.value = value;
+            }
+
+            return { ...state, crosswordGrid: grid }
       default:
          return state;
    }
