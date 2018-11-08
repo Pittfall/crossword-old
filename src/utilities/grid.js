@@ -98,14 +98,37 @@ export class CrosswordSquare {
       return retClue.clue;
     }
 
-   getFocusedSquare () {
+   getFocusedSquareIndex () {
       return this.squares.findIndex(square => square.userData.focus);
+   }
+
+   getNextClueNumber (currentClueNumber, clueDirection) {
+      let clues = null;
+
+      if (clueDirection === CLUE_DIRECTION.Across) {
+         clues = this.clues.across.map(clue => {
+            return +clue.number;
+         });
+      } else {
+         clues = this.clues.down.map(clue => {
+            return +clue.number;
+         });
+      }
+
+      let indexOfNextClue = clues.indexOf(currentClueNumber) + 1;
+      
+      if (indexOfNextClue >= clues.length) {
+         indexOfNextClue = 0;
+      }
+
+      return clues[indexOfNextClue];
    }
 
    getNextSquare (clueDirection) {
       let gotValidSquare = false;
-      let nextElement = this.getFocusedSquare();
-  
+      const currentElement = this.getFocusedSquareIndex();
+      let nextElement = currentElement;
+
       while(!gotValidSquare) {
          if (clueDirection === CLUE_DIRECTION.Across) {
             nextElement++;
@@ -114,46 +137,33 @@ export class CrosswordSquare {
                nextElement = 0;
             }
          }
-    
+
          if (clueDirection === CLUE_DIRECTION.Down) {
             nextElement += this.size.columns;
-  
+
+            // if we are on the last square, go back to the beginning.
+            if (nextElement === this.squares.length - 1) {
+               nextElement = 0;
+            }
+
             if (nextElement >= this.squares.length) {
                nextElement = (nextElement - this.squares.length) + 1;
             }
          }
   
          if (this.squares[nextElement].type !== SQUARE_TYPE.Black) {
-            gotValidSquare = true;
-         }
-      }
-      
-      return nextElement;
-    }
+            if (clueDirection === CLUE_DIRECTION.Across) {
+               gotValidSquare = true;
+            } else {
+               const lastClueDown = this.squares[currentElement].clueNumbers.down;
+               const currentClueDown = this.squares[nextElement].clueNumbers.down;
+               const nextClueDown = this.getNextClueNumber(lastClueDown, CLUE_DIRECTION.Down);
 
-    getPreviousSquare (clueDirection) {
-      let gotValidSquare = false;
-      let nextElement = this.getFocusedSquare();
-  
-      while(!gotValidSquare) {
-         if (clueDirection === CLUE_DIRECTION.Across) {
-            nextElement--;
-  
-            if (nextElement < 0) {
-               nextElement = 0;
+               // Check if the next square is part of the current clue or part of the next clue number in sequence.
+               if (currentClueDown === lastClueDown || currentClueDown === nextClueDown) {
+                  gotValidSquare = true;
+               }
             }
-         }
-    
-         if (clueDirection === CLUE_DIRECTION.Down) {
-            nextElement -= this.size.columns;
-  
-            if (nextElement < 0) {
-               nextElement = 0;
-            }
-         }
-  
-         if (this.squares[nextElement].type !== SQUARE_TYPE.Black) {
-            gotValidSquare = true;
          }
       }
       
