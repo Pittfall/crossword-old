@@ -41,14 +41,18 @@ class Grid extends Component {
 
     for (let i = 0; i < grid.squares.length; i++) {
       if (grid.squares[i].userData.focus) {
+         let nextElement = 0;
+
          // TODO: fix this harcode.
          if (button === "{bksp}") {
             grid.squares[i].userData.value = '';
+            nextElement = grid.getPreviousSquare(this.props.clueDirection);
          } else {
             grid.squares[i].userData.value = button;
-            const nextElement = grid.getNextSquare(this.props.clueDirection);
-            grid.setFocusToClue(nextElement, this.props.clueDirection);
+            nextElement = grid.getNextSquare(this.props.clueDirection);
          }
+
+         grid.setFocusToClue(nextElement, this.props.clueDirection);
 
          const gridValues = grid.squares.reduce((squareValues, square, i) => {
             if (!_.isEmpty(square.userData.value)) {

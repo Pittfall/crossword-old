@@ -102,6 +102,25 @@ export class CrosswordSquare {
       return this.squares.findIndex(square => square.userData.focus);
    }
 
+   getPreviousClueNumber (currentClueNumber, clueDirection) {
+      let clues = null;
+
+      if (clueDirection === CLUE_DIRECTION.Across) {
+         clues = this.clues.across.map(clue => {
+            return +clue.number;
+         });
+      } else {
+         clues = this.clues.down.map(clue => {
+            return +clue.number;
+         });
+      }
+
+      let indexOfPreviousClue = clues.indexOf(currentClueNumber) - 1;
+      indexOfPreviousClue = indexOfPreviousClue < 0 ? 0 : indexOfPreviousClue;
+
+      return clues[indexOfPreviousClue];
+   }
+
    getNextClueNumber (currentClueNumber, clueDirection) {
       let clues = null;
 
@@ -116,10 +135,7 @@ export class CrosswordSquare {
       }
 
       let indexOfNextClue = clues.indexOf(currentClueNumber) + 1;
-      
-      if (indexOfNextClue >= clues.length) {
-         indexOfNextClue = 0;
-      }
+      indexOfNextClue = indexOfNextClue >= clues.length ? 0 : indexOfNextClue;
 
       return clues[indexOfNextClue];
    }
@@ -158,6 +174,47 @@ export class CrosswordSquare {
                const lastClueDown = this.squares[currentElement].clueNumbers.down;
                const currentClueDown = this.squares[nextElement].clueNumbers.down;
                const nextClueDown = this.getNextClueNumber(lastClueDown, CLUE_DIRECTION.Down);
+
+               // Check if the next square is part of the current clue or part of the next clue number in sequence.
+               if (currentClueDown === lastClueDown || currentClueDown === nextClueDown) {
+                  gotValidSquare = true;
+               }
+            }
+         }
+      }
+      
+      return nextElement;
+    }
+
+    getPreviousSquare (clueDirection) {
+      let gotValidSquare = false;
+      const currentElement = this.getFocusedSquareIndex();
+      let nextElement = currentElement;
+
+      if (currentElement === 0) {
+         return 0;
+      }
+
+      while(!gotValidSquare) {
+         if (clueDirection === CLUE_DIRECTION.Across) {
+            nextElement--;
+            nextElement = nextElement < 0 ? 0 : nextElement;
+         } else {
+            nextElement -= this.size.columns;
+
+            if (nextElement < 0) {
+               nextElement = (this.squares.length + nextElement) - 1;
+            }
+         }
+
+  
+         if (this.squares[nextElement].type !== SQUARE_TYPE.Black) {
+            if (clueDirection === CLUE_DIRECTION.Across) {
+               gotValidSquare = true;
+            } else {
+               const lastClueDown = this.squares[currentElement].clueNumbers.down;
+               const currentClueDown = this.squares[nextElement].clueNumbers.down;
+               const nextClueDown = this.getPreviousClueNumber(lastClueDown, CLUE_DIRECTION.Down);
 
                // Check if the next square is part of the current clue or part of the next clue number in sequence.
                if (currentClueDown === lastClueDown || currentClueDown === nextClueDown) {
