@@ -2,17 +2,20 @@ import * as actionTypes from './actionTypes';
 import { CROSSWORD_SOURCE } from '../../constants/constants';
 import { NYTPuzzle } from '../../CrosswordData/NYTData/NYTData';
 import { CLUE_DIRECTION } from '../../constants/constants';
-import { GetSavedCrossword } from '../../Http/API/API';
+import { squareValues } from '../../firebase/firebase';
 
 export const getSquareValues = () => {
    return dispatch => {
-      GetSavedCrossword()
-         .then(data => {
-            dispatch(startGetSquareValues(data));
-         })
-         .catch (error => {
+      squareValues.on('value', snapshot => {
+         const squares = snapshot.val();
 
-         });
+         dispatch(clearUserValues());
+         if (squares) {
+            dispatch(updateSquareValues(snapshot.val()));
+         } else {
+            // Initialize values (a 15x15 crossword will be of size 225 for example)
+         }
+      });
    }
 }
 
@@ -48,7 +51,13 @@ export const updateClueDirection = (clueDirection) => {
    }
 }
 
-const startGetSquareValues = (squareValues) => {
+const clearUserValues = () => {
+   return {
+      type: actionTypes.CLEAR_USER_VALUES
+   }
+}
+
+const updateSquareValues = (squareValues) => {
    return {
       type: actionTypes.GET_SQUARE_VALUES,
       squareValues: squareValues

@@ -1,10 +1,12 @@
 import React, { Fragment, Component } from 'react';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 
 import Square from '../../components/Grid/Square/Square';
 import Clue from '../../components/Grid/Clue/Clue';
 import Keyboard from '../../components/Keyboard/Keyboard';
 import Spinner from '../../UI/Spinner/Spinner';
+import { squareValues } from '../../firebase/firebase';
 
 import { CLUE_DIRECTION } from '../../constants/constants';
 import { initCrossword, updateCrossword, updateClueDirection, getSquareValues } from '../../store/actions/grid';
@@ -39,17 +41,26 @@ class Grid extends Component {
 
     for (let i = 0; i < grid.squares.length; i++) {
       if (grid.squares[i].userData.focus) {
-        // TODO: fix this harcode.
-        if (button === "{bksp}") {
-          grid.squares[i].userData.value = '';
-        } else {
-          grid.squares[i].userData.value = button;
-          const nextElement = grid.getNextSquare(this.props.clueDirection);
-          grid.setFocusToClue(nextElement, this.props.clueDirection);
-        }
+         // TODO: fix this harcode.
+         if (button === "{bksp}") {
+            grid.squares[i].userData.value = '';
+         } else {
+            grid.squares[i].userData.value = button;
+            const nextElement = grid.getNextSquare(this.props.clueDirection);
+            grid.setFocusToClue(nextElement, this.props.clueDirection);
+         }
 
-        this.props.onUpdateCrossword(grid);
-        return;
+         const gridValues = grid.squares.reduce((squareValues, square, i) => {
+            if (!_.isEmpty(square.userData.value)) {
+               squareValues[i] = square.userData.value;
+            }
+            return squareValues;
+         }, {});
+       
+         squareValues.set(gridValues);
+
+         this.props.onUpdateCrossword(grid);
+         return;
       }
     }
   }
