@@ -130,5 +130,34 @@ export class CrosswordSquare {
       
       return nextElement;
     }
+
+    getPreviousSquare (clueDirection) {
+      let gotValidSquare = false;
+      let nextElement = this.getFocusedSquare();
+  
+      while(!gotValidSquare) {
+         if (clueDirection === CLUE_DIRECTION.Across) {
+            nextElement--;
+  
+            if (nextElement < 0) {
+               nextElement = 0;
+            }
+         }
+    
+         if (clueDirection === CLUE_DIRECTION.Down) {
+            nextElement -= this.size.columns;
+  
+            if (nextElement < 0) {
+               nextElement = 0;
+            }
+         }
+  
+         if (this.squares[nextElement].type !== SQUARE_TYPE.Black) {
+            gotValidSquare = true;
+         }
+      }
+      
+      return nextElement;
+    }
  }
 
