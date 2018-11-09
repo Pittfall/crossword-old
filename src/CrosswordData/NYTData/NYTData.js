@@ -12,7 +12,7 @@ export const NYTPuzzle = (publishDate) => {
       });
       
       const puzzleData = response.data;
-      console.log(puzzleData);
+      //console.log(puzzleData);
       let retData  = new CrosswordGrid();
 
       retData.size.columns = puzzleData.size.cols;
@@ -93,7 +93,7 @@ export const NYTPuzzle = (publishDate) => {
         }
       }
 
-      console.log(retData);
+      //console.log(retData);
 
       resolve(retData);
     })

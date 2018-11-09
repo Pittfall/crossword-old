@@ -1,6 +1,5 @@
 import React, { Fragment, Component } from 'react';
 import { connect } from 'react-redux';
-import _ from 'lodash';
 
 import Square from '../../components/Grid/Square/Square';
 import Clue from '../../components/Grid/Clue/Clue';
@@ -53,15 +52,8 @@ class Grid extends Component {
          }
 
          grid.setFocusToClue(nextElement, this.props.clueDirection);
-
-         const gridValues = grid.squares.reduce((squareValues, square, i) => {
-            if (!_.isEmpty(square.userData.value)) {
-               squareValues[i] = square.userData.value;
-            }
-            return squareValues;
-         }, {});
        
-         squareValues.set(gridValues);
+         squareValues.update({ [i]: grid.squares[i].userData.value });
 
          this.props.onUpdateCrossword(grid);
          return;
