@@ -3,6 +3,7 @@ import { CROSSWORD_SOURCE } from '../../constants/constants';
 import { NYTPuzzle } from '../../CrosswordData/NYTData/NYTData';
 import { CLUE_DIRECTION } from '../../constants/constants';
 import { squareValues } from '../../firebase/firebase';
+import { GetPuzzleDate } from '../../Http/API/API';
 
 export const getSquareValues = () => {
    return dispatch => {
@@ -22,7 +23,9 @@ export const getSquareValues = () => {
 export const initCrossword = () => {
    return dispatch => {
       dispatch(initCrosswordStart());
-      getCrossword(CROSSWORD_SOURCE.NYT, '2017/01/04')
+      GetPuzzleDate()
+      .then (response => {
+         getCrossword(CROSSWORD_SOURCE.NYT, response.data)
          .then (data => {
             const crosswordGrid = data;
             crosswordGrid.setFocusToClue(0, CLUE_DIRECTION.Across);
@@ -32,6 +35,11 @@ export const initCrossword = () => {
          .catch (error => {
             dispatch(initCrosswordError(error));
          })
+      })
+      .catch (error => {
+         dispatch(initCrosswordError(error));
+      });
+      
    }
 }
 
