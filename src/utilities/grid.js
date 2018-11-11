@@ -155,11 +155,11 @@ export class CrosswordSquare {
          }
 
          if (clueDirection === CLUE_DIRECTION.Down) {
-            nextElement += this.size.columns;
-
             // if we are on the last square, go back to the beginning.
             if (nextElement === this.squares.length - 1) {
                nextElement = 0;
+            } else {
+               nextElement += this.size.columns;
             }
 
             if (nextElement >= this.squares.length) {
@@ -200,7 +200,11 @@ export class CrosswordSquare {
             nextElement--;
             nextElement = nextElement < 0 ? 0 : nextElement;
          } else {
-            nextElement -= this.size.columns;
+            if (nextElement === 0) {
+               nextElement = this.squares.length - 1;
+            } else {
+               nextElement -= this.size.columns;
+            }
 
             if (nextElement < 0) {
                nextElement = (this.squares.length + nextElement) - 1;
