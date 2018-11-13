@@ -1,5 +1,6 @@
 import React, { Fragment, Component } from 'react';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 
 import Square from '../../components/Grid/Square/Square';
 import Clue from '../../components/Grid/Clue/Clue';
@@ -64,8 +65,12 @@ class Grid extends Component {
 
    clearErrorsClickedHandler = () => {
       let grid = new CrosswordGrid(this.props.crosswordGrid);
-      debugger;
+
       for (let i = 0; i < grid.squares.length; i++) {
+         if (_.isEmpty(grid.squares[i].userData.value)) {
+            continue;
+         }
+
          if (grid.squares[i].answer !== grid.squares[i].userData.value) {
             grid.squares[i].userData.value = '';
             squareValues.update({ [i]: grid.squares[i].userData.value });
