@@ -93,7 +93,7 @@ export const NYTPuzzle = (publishDate) => {
         }
       }
 
-      //console.log(retData);
+      console.log(retData);
 
       resolve(retData);
     })

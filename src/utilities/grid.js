@@ -11,7 +11,8 @@ export class CrosswordSquare {
      this.userData =  {
        focus: false,
        semiFocus: false,
-       value: ''
+       value: '',
+       cleared: false
      }
    }
  }

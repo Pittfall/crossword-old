@@ -28,6 +28,10 @@ const square = (props) => {
     squareCSS = [...squareCSS, classes.Focused];
   }
 
+  if (props.cleared) {
+   squareCSS = [...squareCSS, classes.Cleared];
+  }
+
   return (
     <div className={squareCSS.join(' ')} onClick={clicked}>{props.value}</div>
   );

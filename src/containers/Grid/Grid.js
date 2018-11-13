@@ -55,7 +55,7 @@ class Grid extends Component {
 
          grid.setFocusToClue(nextElement, this.props.clueDirection);
        
-         squareValues.update({ [i]: grid.squares[i].userData.value });
+         squareValues.update({ [i]: { value: grid.squares[i].userData.value, cleared: grid.squares[i].userData.cleared } });
 
          this.props.onUpdateCrossword(grid);
          return;
@@ -73,7 +73,8 @@ class Grid extends Component {
 
          if (grid.squares[i].answer !== grid.squares[i].userData.value) {
             grid.squares[i].userData.value = '';
-            squareValues.update({ [i]: grid.squares[i].userData.value });
+            grid.squares[i].userData.cleared = true;
+            squareValues.update({ [i]: { value: grid.squares[i].userData.value, cleared: grid.squares[i].userData.cleared } });
             this.props.onUpdateCrossword(grid);
          }
       }
@@ -89,6 +90,7 @@ class Grid extends Component {
             <Square key={i}
               focused={this.props.crosswordGrid.squares[i].userData.focus}
               semiFocused={this.props.crosswordGrid.squares[i].userData.semiFocus}
+              cleared={this.props.crosswordGrid.squares[i].userData.cleared}
               value = {this.props.crosswordGrid.squares[i].userData.value}
               type={this.props.crosswordGrid.squares[i].type} 
               clicked={() => this.squareClickedHandler(i)} />);

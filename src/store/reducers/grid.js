@@ -38,6 +38,7 @@ const reducer = (state = initialState, action) => {
          _.mapValues(grid.squares, (square) => {
             const retSquare = { ...square }
             retSquare.userData.value = '';
+            retSquare.userData.cleared = false
             return retSquare;
          });
 
@@ -47,9 +48,11 @@ const reducer = (state = initialState, action) => {
       {
             const grid = new CrosswordGrid(state.crosswordGrid);            
             for (const key in action.squareValues) {
-               const value = action.squareValues[key];
+               const value = action.squareValues[key].value;
+               const cleared = action.squareValues[key].cleared;
 
                grid.squares[[key]].userData.value = value;
+               grid.squares[[key]].userData.cleared = cleared;
             }
 
             return { ...state, crosswordGrid: grid }
