@@ -5,6 +5,7 @@ import Square from '../../components/Grid/Square/Square';
 import Clue from '../../components/Grid/Clue/Clue';
 import Keyboard from '../../components/Keyboard/Keyboard';
 import Spinner from '../../UI/Spinner/Spinner';
+import Button from '../../UI/Button/Button';
 import { squareValues } from '../../firebase/firebase';
 
 import { CLUE_DIRECTION } from '../../constants/constants';
@@ -61,6 +62,18 @@ class Grid extends Component {
     }
   }
 
+   clearErrorsClickedHandler = () => {
+      let grid = new CrosswordGrid(this.props.crosswordGrid);
+      debugger;
+      for (let i = 0; i < grid.squares.length; i++) {
+         if (grid.squares[i].answer !== grid.squares[i].userData.value) {
+            grid.squares[i].userData.value = '';
+            squareValues.update({ [i]: grid.squares[i].userData.value });
+            this.props.onUpdateCrossword(grid);
+         }
+      }
+   }
+
   render () {
     let squares = null;
 
@@ -81,11 +94,12 @@ class Grid extends Component {
 
     if (squares) {
       content = <div className={classes.Content}>
-        <div className={classes.Grid}>
-          {squares}
-        </div>
-        <Clue clue={this.props.crosswordGrid.getClue(this.props.clueDirection)} />
-        <Keyboard keyPress={(button) => this.keyPressedHandler(button)} />
+         <Button btnType='Danger' clicked={this.clearErrorsClickedHandler}>Clear Errors</Button>
+         <div className={classes.Grid}>
+            {squares}
+         </div>
+         <Clue clue={this.props.crosswordGrid.getClue(this.props.clueDirection)} />
+         <Keyboard keyPress={(button) => this.keyPressedHandler(button)} />
       </div>
     }
     
