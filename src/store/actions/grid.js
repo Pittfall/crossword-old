@@ -9,12 +9,8 @@ export const getSquareValues = () => {
    return dispatch => {
       squareValues.on('value', snapshot => {
          const squares = snapshot.val();
-
-         dispatch(clearUserValues());
          if (squares) {
             dispatch(updateSquareValues(snapshot.val()));
-         } else {
-            // Initialize values (a 15x15 crossword will be of size 225 for example)
          }
       });
    }
@@ -56,12 +52,6 @@ export const updateClueDirection = (clueDirection) => {
    return {
       type: actionTypes.UPDATE_CLUE_DIRECTION,
       clueDirection: clueDirection
-   }
-}
-
-const clearUserValues = () => {
-   return {
-      type: actionTypes.CLEAR_USER_VALUES
    }
 }
 

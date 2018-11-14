@@ -2,8 +2,6 @@ import * as actionTypes from '../actions/actionTypes';
 import { CLUE_DIRECTION } from '../../constants/constants';
 import { CrosswordGrid } from '../../utilities/grid';
 
-import _ from 'lodash';
-
 const initialState = {
    crosswordGrid: null,
    clueDirection: CLUE_DIRECTION.Across
@@ -30,19 +28,6 @@ const reducer = (state = initialState, action) => {
       case actionTypes.UPDATE_CLUE_DIRECTION:
       {
          return { ...state, clueDirection: action.clueDirection }
-      }
-      case actionTypes.CLEAR_USER_VALUES:
-      {
-         const grid = new CrosswordGrid(state.crosswordGrid);
-         
-         _.mapValues(grid.squares, (square) => {
-            const retSquare = { ...square }
-            retSquare.userData.value = '';
-            retSquare.userData.cleared = false
-            return retSquare;
-         });
-
-         return { ...state, crosswordGrid: grid }
       }
       case actionTypes.GET_SQUARE_VALUES:
       {
