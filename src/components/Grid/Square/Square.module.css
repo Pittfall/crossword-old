@@ -1,21 +1,20 @@
 .Square {
-  width: 23px;
-  height: 23px;
-  border: 1px solid black;
-  padding: 0;
-  float: left;
-  position: relative;
-  text-align: center;
-  font-weight: bold;
-  line-height: 1.8em;
-  outline: none;
-  font-size: 17px;
-  color: #323232;
+   display: flex;
+   justify-content: center;
+   align-items: flex-end;
+   padding-bottom: 0.2rem;
+   width: 1.5rem;
+   height: 1.5rem;
+   font-size: 1rem;
+   line-height: 50%;
+   border: 1px solid black;
+   font-weight: bold;
+   color: #323232;
+   position: relative;
 }
 
 .Black {
   background: black;
-  float: left;
 }
 
 .Focused {
@@ -39,10 +38,11 @@
 }
 
 .Numbered:nth-of-type(n)::before {
-  position: absolute;
-  font-weight: normal;
-  top: -45%;
-  left: 1%;
-  content: counter(value);
-  font-size: 10px;
+   left: 0;
+   top: 0;
+   padding-left: 0.1rem;
+   position: absolute;
+   font-weight: normal;
+   content: counter(value);
+   font-size: .5rem;
 }

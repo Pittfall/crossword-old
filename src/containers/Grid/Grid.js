@@ -101,12 +101,12 @@ class Grid extends Component {
 
     if (squares) {
       content = <div className={classes.Content}>
-         <Button btnType='Danger' clicked={this.clearErrorsClickedHandler}>Clear Errors</Button>
-         <div className={classes.Grid}>
-            {squares}
-         </div>
-         <Clue clue={this.props.crosswordGrid.getClue(this.props.clueDirection)} />
-         <Keyboard keyPress={(button) => this.keyPressedHandler(button)} />
+      <Button btnType='Danger' clicked={this.clearErrorsClickedHandler}>Clear Errors</Button>
+      <div className={classes.Grid}>
+         {squares}
+      </div>
+      <Clue clue={this.props.crosswordGrid.getClue(this.props.clueDirection)} />
+      <Keyboard keyPress={(button) => this.keyPressedHandler(button)} />
       </div>
     }
     
