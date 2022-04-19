@@ -44,7 +44,7 @@ class Grid extends Component {
       if (grid.squares[i].userData.focus) {
          let nextElement = 0;
 
-         // TODO: fix this harcode.
+         // TODO: fix this hardcode.
          if (button === "{bksp}") {
             grid.squares[i].userData.value = '';
             nextElement = grid.getPreviousSquare(this.props.clueDirection);
